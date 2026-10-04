@@ -1,0 +1,32 @@
+name: Auto Deploy & Health Check
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy-and-verify:
+    name: Sync Hostinger & Verify Health
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Trigger Live Cache Clear
+        run: |
+          echo "Refreshing application and view cache on live server..."
+          RESPONSE=$(curl -s "https://connect.lifesolution.co.id/optimize-clear?token=lsc_secure_key_2026")
+          echo "Response: $RESPONSE"
+
+      - name: Verify Live Website Status
+        run: |
+          echo "Checking HTTP status of live website..."
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://connect.lifesolution.co.id/")
+          echo "HTTP Status Code: $STATUS_CODE"
+          if [ "$STATUS_CODE" -eq 200 ]; then
+            echo "Website is UP and running smoothly (200 OK)!"
+          else
+            echo "Warning: Received HTTP status $STATUS_CODE"
+          fi
