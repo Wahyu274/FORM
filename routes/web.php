@@ -24,7 +24,7 @@ Route::get('/form/success/{code}', [InventoryFormController::class, 'showSuccess
 |--------------------------------------------------------------------------
 */
 Route::get('/admin/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/admin/login', [LoginController::class, 'login'])->name('login.post');
+Route::post('/admin/login', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.post');
 Route::post('/admin/logout', [LoginController::class, 'logout'])->name('logout');
 
 /*
@@ -57,10 +57,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 /*
 |--------------------------------------------------------------------------
-| Database Migration Utility (Web Runner)
+| Database Migration & Maintenance Utility (Secured Web Runners)
 |--------------------------------------------------------------------------
 */
 Route::get('/migrate-db', function () {
+    if (!\Illuminate\Support\Facades\Auth::check() && request('token') !== 'lsc_secure_key_2026') {
+        return response()->json(['status' => 'unauthorized', 'message' => 'Akses ditolak. Diperlukan autentikasi administrator.'], 403);
+    }
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         $output = \Illuminate\Support\Facades\Artisan::output();
@@ -78,6 +81,9 @@ Route::get('/migrate-db', function () {
 });
 
 Route::get('/seed-db', function () {
+    if (!\Illuminate\Support\Facades\Auth::check() && request('token') !== 'lsc_secure_key_2026') {
+        return response()->json(['status' => 'unauthorized', 'message' => 'Akses ditolak. Diperlukan autentikasi administrator.'], 403);
+    }
     try {
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         $output = \Illuminate\Support\Facades\Artisan::output();
@@ -95,6 +101,10 @@ Route::get('/seed-db', function () {
 });
 
 Route::get('/optimize-clear', function () {
+    if (!\Illuminate\Support\Facades\Auth::check() && request('token') !== 'lsc_secure_key_2026') {
+        // Also allow local/safe clearing if needed, but verify token or auth for external
+        return response()->json(['status' => 'unauthorized', 'message' => 'Akses ditolak. Silakan gunakan parameter ?token=lsc_secure_key_2026 atau login terlebih dahulu.'], 403);
+    }
     try {
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
         $output = \Illuminate\Support\Facades\Artisan::output();
