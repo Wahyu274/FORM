@@ -298,9 +298,10 @@ echo "</ul><hr style='border-color:#334155;'>";
 // Seed Admin & Default Form
 try {
     $pass = password_hash('admin123', PASSWORD_BCRYPT);
-    $stmt = $db->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name)");
+    $stmt = $db->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), password=VALUES(password)");
     $stmt->execute(['Administrator STARLINK', 'admin@starkink.co.id', $pass, 'admin']);
-    echo "<p class='success'>✔ Akun Admin (<code>admin@starkink.co.id</code> / <code>admin123</code>) siap.</p>";
+    $stmt->execute(['Administrator Life Solution', 'admin@lifesolution.co.id', $pass, 'admin']);
+    echo "<p class='success'>✔ Akun Admin (<code>admin@starkink.co.id</code> atau <code>admin@lifesolution.co.id</code> / <code>admin123</code>) siap.</p>";
 } catch (PDOException $e) {
     echo "<p class='info'>ℹ Info User: " . htmlspecialchars($e->getMessage()) . "</p>";
 }
