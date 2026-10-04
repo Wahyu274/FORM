@@ -1,0 +1,14 @@
+{
+  "name": "starkink-inventory-app",
+  "version": "1.0.0",
+  "description": "Form Inventaris Jaringan Partner Starlink Kalimantan - Life Solution Connection",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^2.4.0",
+    "mysql2": "^3.24.5"
+  }
+}
